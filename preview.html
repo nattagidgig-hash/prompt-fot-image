@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ad Prompt Generator | เครื่องมือสร้าง Prompt ภาพโฆษณา</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-2: #eef2ff;
+      --card: rgba(255,255,255,0.84);
+      --text: #101828;
+      --muted: #667085;
+      --line: rgba(16,24,40,0.10);
+      --primary: #3158ff;
+      --primary-2: #7c3aed;
+      --primary-3: #06b6d4;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0b1020;
+      --dark-2: #141a2f;
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --shadow: 0 24px 70px rgba(31,41,55,0.14);
+      --shadow-soft: 0 12px 35px rgba(31,41,55,0.08);
+      --focus: 0 0 0 4px rgba(49,88,255,0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Prompt", "Inter", "Noto Sans Thai", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,0.18), transparent 28rem),
+        radial-gradient(circle at top right, rgba(6,182,212,0.18), transparent 26rem),
+        linear-gradient(135deg, #fbfcff 0%, var(--bg) 42%, var(--bg-2) 100%);
+      min-height: 100vh;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,255,255,0.70)),
+        radial-gradient(circle at 85% 20%, rgba(49,88,255,0.17), transparent 20rem),
+        radial-gradient(circle at 15% 85%, rgba(124,58,237,0.16), transparent 18rem);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid rgba(49,88,255,0.18);
+      border-radius: 999px;
+      color: #2949d3;
+      background: rgba(49,88,255,0.08);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+
+    .spark {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 0 0 6px rgba(49,88,255,0.10);
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 5vw, 66px);
+      line-height: 1.04;
+      letter-spacing: -2.8px;
+    }
+
+    .grad {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2), var(--primary-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .hero-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+      background: rgba(255,255,255,0.78);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-card strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(22,163,74,0.10);
+      color: var(--success);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 22px 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.66);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .template-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      transition: 160ms ease;
+      border: 1px solid transparent;
+    }
+
+    .quick-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .quick-link.chatgpt {
+      color: #0f5132;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .quick-link.gemini {
+      color: #1e3a8a;
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.25);
+    }
+
+    .pill {
+      border: 1px solid rgba(49,88,255,0.14);
+      background: rgba(255,255,255,0.82);
+      color: #25335c;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: 160ms ease;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      border-color: rgba(49,88,255,0.32);
+      background: rgba(49,88,255,0.06);
+    }
+
+    .pill.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 10px 24px rgba(49,88,255,0.22);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(430px, 0.92fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .sample-showcase {
+      margin: 0 0 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.74);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .sample-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sample-title {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .sample-sub {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sample-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sample-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(49,88,255,0.20);
+      background: rgba(255,255,255,0.82);
+      color: #2949d3;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+      transition: 160ms ease;
+    }
+
+    .sample-btn:hover {
+      background: rgba(49,88,255,0.10);
+      border-color: rgba(49,88,255,0.38);
+      transform: translateY(-1px);
+    }
+
+    .sample-viewport {
+      overflow: hidden;
+      padding: 16px;
+    }
+
+    .sample-track {
+      display: flex;
+      gap: 14px;
+      transition: transform 400ms ease;
+      will-change: transform;
+    }
+
+    .sample-card {
+      flex: 0 0 calc((100% - 28px) / 3);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      background: #f8f9ff;
+    }
+
+    .sample-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+
+    .sample-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 0 14px;
+    }
+
+    .sample-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      border: 0;
+      background: rgba(16,24,40,0.18);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .sample-dot.active {
+      width: 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.4px;
+    }
+
+    .panel-sub {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .form {
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    label {
+      display: block;
+      color: #25304d;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 6px;
+      color: #8a94aa;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid rgba(16,24,40,0.13);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.86);
+      padding: 13px 14px;
+      outline: none;
+      color: var(--text);
+      transition: 160ms ease;
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(49,88,255,0.58);
+      box-shadow: var(--focus);
+      background: white;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 0.8fr;
+      gap: 10px;
+      padding-top: 6px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: 160ms ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 48px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 16px 34px rgba(49,88,255,0.25);
+    }
+
+    .btn-secondary {
+      color: #24304f;
+      background: rgba(255,255,255,0.90);
+      border: 1px solid rgba(16,24,40,0.12);
+    }
+
+    .btn-copy {
+      color: white;
+      background: linear-gradient(135deg, #0ea5e9, #16a34a);
+      box-shadow: 0 16px 34px rgba(14,165,233,0.18);
+    }
+
+    .output-panel {
+      position: sticky;
+      top: 18px;
+    }
+
+    .output-wrap {
+      padding: 18px;
+      background: linear-gradient(180deg, var(--dark), var(--dark-2));
+    }
+
+    .editor-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.22);
+    }
+
+    .ratio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    #promptOutput {
+      width: 100%;
+      min-height: 710px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.035));
+      color: rgba(255,255,255,0.92);
+      padding: 20px;
+      line-height: 1.75;
+      resize: vertical;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    #promptOutput::placeholder {
+      color: rgba(255,255,255,0.40);
+    }
+
+    #promptOutput:focus {
+      border-color: rgba(6,182,212,0.50);
+      box-shadow: 0 0 0 4px rgba(6,182,212,0.11);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 16px 18px 18px;
+      background: rgba(255,255,255,0.75);
+      border-top: 1px solid var(--line);
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255,255,255,0.80);
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .stat b {
+      font-size: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      color: white;
+      background: rgba(16,24,40,0.94);
+      box-shadow: var(--shadow);
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 200ms ease;
+      z-index: 50;
+      font-weight: 800;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .footer-note {
+      margin-top: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-card {
+        flex-basis: calc((100% - 14px) / 2);
+      }
+
+      .output-panel {
+        position: static;
+      }
+
+      #promptOutput {
+        min-height: 560px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100% - 20px, 1440px);
+        padding-top: 14px;
+      }
+
+      .hero {
+        padding: 24px;
+        border-radius: 22px;
+      }
+
+      h1 {
+        letter-spacing: -1.4px;
+      }
+
+      .grid-2,
+      .actions,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .sample-card {
+        flex-basis: 100%;
+      }
+
+      .panel-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .template-row {
+        width: 100%;
+      }
+
+      .quick-links {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .quick-link {
+        flex: 1 1 auto;
+      }
+
+      .pill {
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow"><span class="spark"></span> Ad Prompt Generator</span>
+          <h1>สร้าง Prompt ภาพโฆษณาให้ <span class="grad">คม ชัด พร้อมขาย</span></h1>
+          <p>
+            เครื่องมือหน้าเดียวสำหรับกราฟิกดีไซเนอร์ นักการตลาด และคนทำเพจ
+            กรอกข้อมูลสำคัญ เลือกสไตล์ เลือก Ratio แล้วสร้าง Prompt เต็มสำหรับนำไปใช้กับ AI สร้างภาพได้ทันที
+          </p>
+        </div>
+        <aside class="hero-card">
+          <strong>ออกแบบมาเพื่อแก้ Pain Point จริง</strong>
+          <div class="mini-list">
+            <div class="mini-item"><span class="check">✓</span> ไม่ต้องพิมพ์ Prompt ยาวซ้ำทุกครั้ง</div>
+            <div class="mini-item"><span class="check">✓</span> ไม่ลืม Ratio, Target, Visual Hook, Style</div>
+            <div class="mini-item"><span class="check">✓</span> Copy ไปใช้กับ ChatGPT Image, Midjourney, Firefly, Canva AI ได้</div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section class="sample-showcase" aria-label="ตัวอย่างผลลัพธ์">
+      <div class="sample-head">
+        <div>
+          <h2 class="sample-title">ตัวอย่างผลลัพธ์จาก Prompt</h2>
+          <p class="sample-sub">เลื่อนดูผลงานตัวอย่างเพื่อเทียบสไตล์ก่อนสร้างภาพจริง</p>
+        </div>
+        <div class="sample-controls">
+          <button class="sample-btn" type="button" id="samplePrev" aria-label="เลื่อนก่อนหน้า">‹</button>
+          <button class="sample-btn" type="button" id="sampleNext" aria-label="เลื่อนถัดไป">›</button>
+        </div>
+      </div>
+      <div class="sample-viewport">
+        <div class="sample-track" id="sampleTrack">
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_42_40_AM-a6c70026-ad00-411e-9a2e-194a5220e924.png" alt="ตัวอย่างภาพโฆษณา AI 1"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_42_23_AM-4f679d8d-9f64-46c5-82a7-6221a8c89ec5.png" alt="ตัวอย่างภาพโฆษณา AI 2"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_54_07_AM-8f604238-bef8-4592-afbf-1843cccf62b0.png" alt="ตัวอย่างภาพโฆษณา AI 3"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_42_09_AM-96d9358e-ebe2-4515-ad48-d0a25c2da49a.png" alt="ตัวอย่างภาพโฆษณา AI 4"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_42_31_AM-39ea8b86-9ab6-492b-9e7c-1be25bf97147.png" alt="ตัวอย่างภาพโฆษณา AI 5"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_23__2026__11_42_16_AM-aecc117e-0bca-4c49-a7dc-50a1ba00c71b.png" alt="ตัวอย่างภาพโฆษณา AI 6"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_25__2026__12_49_49_AM-7c19bc36-b1c6-435b-9913-58b46cb6bb61.png" alt="ตัวอย่างภาพโฆษณา AI 7"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/____________-01-e39a30a2-2270-435d-a09e-3674056944f7.png" alt="ตัวอย่างภาพโฆษณา AI 8"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_25__2026__12_48_23_AM-29783267-44b9-45eb-b248-be3a64d3b566.png" alt="ตัวอย่างภาพโฆษณา AI 9"></figure>
+          <figure class="sample-card"><img src="/Users/nattagid/.cursor/projects/Users-nattagid-Downloads-Prompt-fot-Image/assets/ChatGPT_Image_Apr_25__2026__12_48_16_AM-28e1a262-33e5-40b6-9b85-6b74e8e0c94a.png" alt="ตัวอย่างภาพโฆษณา AI 10"></figure>
+        </div>
+      </div>
+      <div class="sample-dots" id="sampleDots"></div>
+    </section>
+
+    <section class="toolbar" aria-label="Prompt templates">
+      <div>
+        <strong>Template พร้อมใช้</strong>
+        <div class="panel-sub">เลือกตัวอย่างแล้วแก้ต่อได้ทันที</div>
+      </div>
+      <div class="template-row">
+        <button class="pill" data-template="premium">Premium Product</button>
+        <button class="pill" data-template="flash">Flash Sale</button>
+        <button class="pill" data-template="event">Event Poster</button>
+        <button class="pill" data-template="food">Food & Beverage</button>
+        <button class="pill" data-template="realestate">Real Estate</button>
+        <button class="pill" data-template="eco">Eco Product</button>
+      </div>
+      <div class="quick-links" aria-label="AI quick links">
+        <a class="quick-link chatgpt" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT</a>
+        <a class="quick-link gemini" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Open Gemini</a>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">ข้อมูลสำหรับสร้าง Prompt</h2>
+            <p class="panel-sub">กรอกเท่าที่มี ยิ่งละเอียด ยิ่งได้ Prompt ที่คุมภาพได้ดีขึ้น</p>
+          </div>
+        </div>
+
+        <form class="form" id="promptForm">
+          <div class="grid-2">
+            <div>
+              <label for="workType">ประเภทงาน</label>
+              <select id="workType">
+                <option value="ภาพโฆษณาเชิงพาณิชย์">ภาพโฆษณาเชิงพาณิชย์</option>
+                <option value="โปสเตอร์ประชาสัมพันธ์">โปสเตอร์ประชาสัมพันธ์</option>
+                <option value="Social Media Post">Social Media Post</option>
+                <option value="Sale Campaign">Sale Campaign</option>
+                <option value="Banner Website">Banner Website</option>
+                <option value="ภาพเปิดตัวสินค้า">ภาพเปิดตัวสินค้า</option>
+                <option value="ภาพโปรโมตกิจกรรม">ภาพโปรโมตกิจกรรม</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="ratio">Ratio / สเกลภาพ</label>
+              <select id="ratio">
+                <option value="1:1">1:1 Square Post</option>
+                <option value="4:5" selected>4:5 Social Ads</option>
+                <option value="16:9">16:9 Landscape / Website</option>
+                <option value="3:4">3:4 Poster</option>
+                <option value="9:16">9:16 Story / Reels</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="product">สินค้า / บริการ / กิจกรรม</label>
+              <input id="product" placeholder="เช่น เครื่องดื่มมัจฉะมะม่วง, คอร์สอบรม, สกินแคร์" />
+            </div>
+
+            <div>
+              <label for="target">กลุ่มเป้าหมาย</label>
+              <input id="target" placeholder="เช่น วัยรุ่น 18-28 ปี, เจ้าของเพจ, คนรักสุขภาพ" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="headline">Headline / ข้อความหลักบนภาพ</label>
+              <input id="headline" placeholder="เช่น สดชื่น x2 ในแก้วเดียว" />
+            </div>
+
+            <div>
+              <label for="subtext">Subtext / ข้อความรอง</label>
+              <input id="subtext" placeholder="เช่น โปรวันนี้เท่านั้น / หลักสูตรอบรมโดย..." />
+            </div>
+          </div>
+
+          <div>
+            <label for="visualIdea">Visual Idea / ไอเดียภาพ</label>
+            <textarea id="visualIdea" placeholder="อธิบายภาพที่อยากเห็น เช่น สินค้าอยู่กลางภาพ มี splash กลางอากาศ ฉากหลังเบลอ แสงสดใส"></textarea>
+          </div>
+
+          <div>
+            <label for="visualHook">Visual Hook / จุดหยุดสายตา</label>
+            <textarea id="visualHook" placeholder="เช่น ตัวเลขส่วนลดขนาดใหญ่, สินค้าลอยเด่นกลางภาพ, แสงสะท้อน premium, collage หลายภาพ"></textarea>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="style">Style / สไตล์ภาพ</label>
+              <select id="style">
+                <option value="Premium Commercial">Premium Commercial</option>
+                <option value="Minimal Clean">Minimal Clean</option>
+                <option value="Viral Social Media">Viral Social Media</option>
+                <option value="Luxury Editorial">Luxury Editorial</option>
+                <option value="Photorealistic Advertising">Photorealistic Advertising</option>
+                <option value="Cinematic Realism">Cinematic Realism</option>
+                <option value="Collage Art">Collage Art</option>
+                <option value="3D Product Render">3D Product Render</option>
+                <option value="Aggressive Commercial">Aggressive Commercial</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="mood">Tone & Mood</label>
+              <select id="mood">
+                <option value="modern, clean, premium, trustworthy">Modern / Clean / Premium</option>
+                <option value="fresh, energetic, youthful, high-conversion">Fresh / Energetic</option>
+                <option value="warm, inspiring, friendly, community-driven">Warm / Inspiring</option>
+                <option value="bold, aggressive, urgent, conversion-focused">Bold / Aggressive</option>
+                <option value="luxury, elegant, calm, high-end">Luxury / Elegant</option>
+                <option value="natural, sustainable, organic, honest">Natural / Sustainable</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label for="colorTone">โทนสี</label>
+              <input id="colorTone" placeholder="เช่น น้ำเงิน navy + ขาว + เหลือง, เขียวมัจฉะ + เหลืองมะม่วง" />
+            </div>
+
+            <div>
+              <label for="platform">แพลตฟอร์มที่ใช้</label>
+              <select id="platform">
+                <option value="เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์">Facebook / Instagram</option>
+                <option value="เหมาะสำหรับ Website Banner และ Landing Page">Website / Landing Page</option>
+                <option value="เหมาะสำหรับ Story, Reels และ TikTok Vertical">Story / Reels / TikTok</option>
+                <option value="เหมาะสำหรับสิ่งพิมพ์และโปสเตอร์ความละเอียดสูง">Print / Poster</option>
+                <option value="เหมาะสำหรับงานนำเสนอและสไลด์พรีเซนต์">Presentation</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="extra">รายละเอียดเพิ่มเติม / Negative Prompt</label>
+            <textarea id="extra" placeholder="เช่น ไม่เอาโลโก้ปลอม, ไม่เอามือผิดรูป, เว้นพื้นที่ว่างด้านบนสำหรับข้อความ, ไม่ให้ภาพรก"></textarea>
+            <span class="hint">แนะนำ: ใส่ข้อห้ามหรือสิ่งที่ต้องระวัง เช่น ไม่ใส่ข้อความมั่ว ไม่ทำตัวอักษรผิด ไม่ใช้ภาพรก</span>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn btn-primary" id="generateBtn">Generate Prompt</button>
+            <button type="button" class="btn btn-copy" id="copyBtn">Copy Prompt</button>
+            <button type="button" class="btn btn-secondary" id="clearBtn">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel output-panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Prompt Output</h2>
+            <p class="panel-sub">ตรวจนิดเดียว แล้วกด Copy ไปใช้กับ AI สร้างภาพได้เลย</p>
+          </div>
+        </div>
+
+        <div class="output-wrap">
+          <div class="editor-top">
+            <div class="dots" aria-hidden="true">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span class="ratio-badge" id="ratioBadge">Ratio: 4:5</span>
+          </div>
+          <textarea id="promptOutput" placeholder="Prompt ที่สร้างจะปรากฏตรงนี้..."></textarea>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <small>Characters</small>
+            <b id="charCount">0</b>
+          </div>
+          <div class="stat">
+            <small>Words</small>
+            <b id="wordCount">0</b>
+          </div>
+          <div class="stat">
+            <small>Ratio</small>
+            <b id="ratioStat">4:5</b>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <p class="footer-note">
+      ให้เพื่อนๆ ได้นำไปใช้สร้างภาพได้ทุก Ai<br />
+      By Nattagid Manasermwong
+    </p>
+  </div>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const templates = {
+      premium: {
+        workType: "ภาพโฆษณาเชิงพาณิชย์",
+        ratio: "4:5",
+        product: "เซรั่มบำรุงผิวสูตรธรรมชาติ",
+        target: "วัยทำงานอายุ 25-40 ปี ที่ชอบสินค้า clean beauty และภาพลักษณ์ premium",
+        headline: "ผิวดูแพง ในทุกวัน",
+        subtext: "สารสกัดธรรมชาติ อ่อนโยน ใช้ได้ทุกวัน",
+        visualIdea: "ขวดเซรั่มวางกลางภาพบนพื้นหินอ่อน มีหยดน้ำและใบไม้เล็ก ๆ รอบสินค้า ฉากหลังเบลอแบบ studio premium",
+        visualHook: "แสงสะท้อนบนขวดสินค้าแบบ luxury highlight ทำให้สินค้าดูเด่นและมีมูลค่าสูง",
+        style: "Premium Commercial",
+        mood: "luxury, elegant, calm, high-end",
+        colorTone: "ขาวครีม, ทองอ่อน, เขียวธรรมชาติ, โทนสว่างสะอาด",
+        platform: "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์",
+        extra: "ไม่ใส่โลโก้ปลอม ไม่ทำฉลากผิดเพี้ยน ไม่ให้ภาพรก เว้นพื้นที่ด้านบนสำหรับข้อความ"
+      },
+      flash: {
+        workType: "Sale Campaign",
+        ratio: "4:5",
+        product: "เสื้อผ้า Streetwear คอลเลกชัน Summer Drop",
+        target: "วัยรุ่นและวัยทำงานอายุ 18-28 ปี ที่ชอบแฟชั่นและดีลแรง",
+        headline: "ลดสูงสุด 70% วันนี้วันเดียวเท่านั้น",
+        subtext: "Flash Sale สินค้ามีจำนวนจำกัด ไม่มีรีสต็อก",
+        visualIdea: "นางแบบกลางเมืองยามค่ำ แสงนีออน มี motion blur เบา ๆ เสื้อผ้าและป้ายราคาลอยรอบตัว",
+        visualHook: "ตัวเลข 70% ขนาดใหญ่พร้อม light burst ดึงสายตาทันที",
+        style: "Aggressive Commercial",
+        mood: "bold, aggressive, urgent, conversion-focused",
+        colorTone: "แดง, ดำ, ขาว, คอนทราสต์สูง",
+        platform: "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์",
+        extra: "ตัวอักษรต้องอ่านง่าย ไม่รกเกินไป เน้นความเร่งด่วนและแรงกระตุ้นให้ซื้อ"
+      },
+      event: {
+        workType: "โปสเตอร์ประชาสัมพันธ์",
+        ratio: "3:4",
+        product: "กิจกรรมอบรมเชิงปฏิบัติการด้านการตลาดด้วย AI",
+        target: "เจ้าของธุรกิจขนาดเล็ก คนทำเพจ นักการตลาด และฟรีแลนซ์",
+        headline: "ใช้ AI ทำคอนเทนต์ให้ขายได้จริง",
+        subtext: "Workshop 1 วัน เรียนรู้ตั้งแต่ Prompt ถึงภาพโฆษณา",
+        visualIdea: "ภาพคนไทยกำลังทำงานหน้าคอมพิวเตอร์ในห้องเวิร์กช็อป บรรยากาศมืออาชีพ มีจอแสดงตัวอย่างคอนเทนต์ AI",
+        visualHook: "แสงจากหน้าจอและองค์ประกอบ UI ลอยบาง ๆ รอบผู้เรียน สื่อถึงการใช้ AI แบบทันสมัย",
+        style: "Premium Commercial",
+        mood: "modern, clean, premium, trustworthy",
+        colorTone: "น้ำเงิน navy, ขาว, ฟ้า, เหลือง accent",
+        platform: "เหมาะสำหรับสิ่งพิมพ์และโปสเตอร์ความละเอียดสูง",
+        extra: "เว้นพื้นที่หัวโปสเตอร์ให้ชัด ไม่ใส่ข้อความมั่ว ไม่ใช้ภาพคนใส่สูทเวอร์เกินจริง"
+      },
+      food: {
+        workType: "ภาพโฆษณาเชิงพาณิชย์",
+        ratio: "4:5",
+        product: "เครื่องดื่มมัจฉะมะม่วง",
+        target: "วัยรุ่นและวัยทำงานที่ชอบเครื่องดื่มสดชื่นและถ่ายรูปลงโซเชียล",
+        headline: "สดชื่น x2 ในแก้วเดียว",
+        subtext: "มัจฉะเข้มละมุน ผสานมะม่วงสดหวานฉ่ำ",
+        visualIdea: "แก้วเครื่องดื่มตั้งกลางภาพ มะม่วงสดระเบิดเป็น splash ผสมกับมัจฉะกลางอากาศ ฉากหลัง tropical เบลอสวย",
+        visualHook: "splash สีเหลืองมะม่วงและเขียวมัจฉะพุ่งรอบแก้วแบบ freeze motion",
+        style: "Photorealistic Advertising",
+        mood: "fresh, energetic, youthful, high-conversion",
+        colorTone: "เหลืองมะม่วง, เขียวมัจฉะ, ขาว, แสงสดใส",
+        platform: "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์",
+        extra: "ภาพต้องดูน่าดื่ม สดชื่น ไม่ทำของเหลวเลอะเทอะเกินไป ตัวอักษรอ่านง่าย"
+      },
+      realestate: {
+        workType: "โปสเตอร์ประชาสัมพันธ์",
+        ratio: "4:5",
+        product: "สัมมนาอสังหาฯ เพื่อการเป็นนายหน้ามืออาชีพ",
+        target: "ผู้ที่สนใจเริ่มต้นเป็นนายหน้าอสังหาริมทรัพย์ และคนขายอสังหาฯ มือใหม่",
+        headline: "สัมมนาอสังหาฯ เพื่อการเป็นนายหน้ามืออาชีพ",
+        subtext: "Seminar PROFESSIONAL BROKER • หลักสูตรอบรมโดย Zien Property",
+        visualIdea: "ภาพจริงคนไทยกำลังให้บริการลูกค้าอสังหาฯ หน้างานที่ดินหรือบ้าน บรรยากาศมืออาชีพแต่ไม่ใส่สูทเวอร์เกินไป",
+        visualHook: "ใช้ collage art หลายภาพซ้อนอย่างเป็นระเบียบ มีกรอบภาพ premium และเส้นกราฟิกนำสายตา",
+        style: "Collage Art",
+        mood: "modern, clean, premium, trustworthy",
+        colorTone: "น้ำเงิน blue navy, ขาว, เหลืองทอง accent",
+        platform: "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์",
+        extra: "โลโก้บริษัทไม่ต้องใหญ่ ไม่ทำภาพขายฝันเกินจริง ไม่ใส่ข้อความผิดเพี้ยน ใช้ฟอนต์ Prompt look"
+      },
+      eco: {
+        workType: "Social Media Post",
+        ratio: "1:1",
+        product: "น้ำยาล้างจานรักษ์โลกแบบ Refill",
+        target: "ครอบครัวรุ่นใหม่ ร้านคาเฟ่ และคนที่อยากลดขยะพลาสติก",
+        headline: "เติมใหม่ ใช้ซ้ำ ลดขยะทุกวัน",
+        subtext: "ECO Refill Station เพื่อบ้านและชุมชนที่ยั่งยืน",
+        visualIdea: "ขวดรีฟิลใสวางบนเคาน์เตอร์ไม้ มีมือกำลังเติมน้ำยาจากสถานีรีฟิล ฉากหลังเป็นครัวสะอาดและต้นไม้",
+        visualHook: "หยดน้ำใสและสัญลักษณ์ circular refill แบบ subtle graphic ช่วยสื่อสารความยั่งยืน",
+        style: "Minimal Clean",
+        mood: "natural, sustainable, organic, honest",
+        colorTone: "เขียวธรรมชาติ, ขาว, น้ำตาลไม้, ฟ้าอ่อน",
+        platform: "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์",
+        extra: "ไม่ใช้ภาพโลกแบบ cliché เกินไป เน้นความจริงใจ สะอาด และจับต้องได้"
+      }
+    };
+
+    const fields = [
+      "workType", "ratio", "product", "target", "headline", "subtext",
+      "visualIdea", "visualHook", "style", "mood", "colorTone", "platform", "extra"
+    ];
+
+    const sampleTrack = $("sampleTrack");
+    const sampleCards = Array.from(document.querySelectorAll(".sample-card"));
+    const sampleDots = $("sampleDots");
+    const samplePrev = $("samplePrev");
+    const sampleNext = $("sampleNext");
+    let sampleIndex = 0;
+    let sampleTimer;
+
+    function getVisibleSampleCount() {
+      if (window.matchMedia("(max-width: 720px)").matches) return 1;
+      if (window.matchMedia("(max-width: 1080px)").matches) return 2;
+      return 3;
+    }
+
+    function getSamplePageCount() {
+      return Math.ceil(sampleCards.length / getVisibleSampleCount());
+    }
+
+    function renderSampleDots() {
+      const pageCount = getSamplePageCount();
+      sampleDots.innerHTML = "";
+
+      for (let i = 0; i < pageCount; i += 1) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "sample-dot" + (i === sampleIndex ? " active" : "");
+        dot.setAttribute("aria-label", `ไปยังชุดตัวอย่าง ${i + 1}`);
+        dot.addEventListener("click", () => {
+          sampleIndex = i;
+          updateSampleSlider();
+          restartSampleAutoSlide();
+        });
+        sampleDots.appendChild(dot);
+      }
+    }
+
+    function updateSampleSlider() {
+      if (!sampleTrack || !sampleCards.length) return;
+
+      const visible = getVisibleSampleCount();
+      const pageCount = getSamplePageCount();
+      sampleIndex = Math.max(0, Math.min(sampleIndex, pageCount - 1));
+      const step = sampleCards[0].getBoundingClientRect().width + 14;
+      sampleTrack.style.transform = `translateX(-${sampleIndex * visible * step}px)`;
+
+      document.querySelectorAll(".sample-dot").forEach((dot, index) => {
+        dot.classList.toggle("active", index === sampleIndex);
+      });
+    }
+
+    function slideSamples(direction = 1) {
+      const pageCount = getSamplePageCount();
+      sampleIndex = (sampleIndex + direction + pageCount) % pageCount;
+      updateSampleSlider();
+    }
+
+    function restartSampleAutoSlide() {
+      clearInterval(sampleTimer);
+      sampleTimer = setInterval(() => slideSamples(1), 3200);
+    }
+
+    function getValue(id) {
+      return ($(id).value || "").trim();
+    }
+
+    function fallback(value, text) {
+      return value && value.length ? value : text;
+    }
+
+    function generatePrompt() {
+      const workType = getValue("workType");
+      const ratio = getValue("ratio");
+      const product = getValue("product");
+      const target = getValue("target");
+      const headline = getValue("headline");
+      const subtext = getValue("subtext");
+      const visualIdea = getValue("visualIdea");
+      const visualHook = getValue("visualHook");
+      const style = getValue("style");
+      const mood = getValue("mood");
+      const colorTone = getValue("colorTone");
+      const platform = getValue("platform");
+      const extra = getValue("extra");
+
+      const prompt = `สร้างภาพโฆษณาระดับมืออาชีพสำหรับ: ${fallback(product, "[ระบุสินค้า / บริการ / กิจกรรม]")}
+
+ประเภทงาน:
+${fallback(workType, "[ระบุประเภทงาน]")}
+
+กลุ่มเป้าหมาย:
+${fallback(target, "[ระบุกลุ่มเป้าหมาย]")}
+
+วัตถุประสงค์ของภาพ:
+ทำให้ผู้ชมสะดุดตาภายใน 1-2 วินาที สื่อสารคุณค่าของสินค้า/กิจกรรมอย่างชัดเจน และเหมาะสำหรับการใช้งานเชิงการตลาดจริง
+
+ข้อความบนภาพ:
+Headline: ${fallback(headline, "[ระบุข้อความหลัก]")}
+Subtext: ${fallback(subtext, "[ระบุข้อความรอง]")}
+
+แนวคิดภาพหลัก:
+${fallback(visualIdea, "[อธิบายภาพหลักที่ต้องการ เช่น สินค้าอยู่กลางภาพ ฉากหลัง แสง องค์ประกอบ และบรรยากาศ]")}
+
+Visual Hook / จุดหยุดสายตา:
+${fallback(visualHook, "[ระบุจุดดึงสายตา เช่น ตัวเลขใหญ่ splash แสงพิเศษ motion blur หรือองค์ประกอบเด่น]")}
+
+Art Direction:
+- Style: ${fallback(style, "Premium Commercial")}
+- Mood: ${fallback(mood, "modern, clean, premium, trustworthy")}
+- Color Palette: ${fallback(colorTone, "[ระบุโทนสีหลักและสี accent]")}
+- Composition: จัดวางองค์ประกอบแบบมืออาชีพ สินค้าหรือประเด็นหลักต้องเด่น มีลำดับสายตาชัดเจน และมีพื้นที่ว่างสำหรับข้อความ
+- Lighting: commercial lighting, clean contrast, soft highlight, professional finish
+- Detail: high-resolution, sharp details, realistic texture, polished advertising quality
+- Typography direction: ตัวอักษรบนภาพต้องอ่านง่าย ทันสมัย มี hierarchy ชัดเจน ไม่รก และเหมาะกับการดูบนมือถือ
+
+Platform:
+${fallback(platform, "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์")}
+
+ขนาดภาพ / Aspect Ratio:
+${fallback(ratio, "4:5")}
+
+ข้อควรหลีกเลี่ยง:
+${fallback(extra, "ไม่ใส่โลโก้ปลอม ไม่สร้างตัวอักษรผิดเพี้ยน ไม่ทำภาพรก ไม่ทำมือหรือใบหน้าผิดรูป ไม่ใช้รายละเอียดเกินจำเป็น")}
+
+คุณภาพภาพ:
+professional advertising image, high-end commercial visual, crisp focus, premium layout, ready for marketing campaign`;
+
+      $("promptOutput").value = prompt;
+      updateStats();
+      showToast("Generate สำเร็จ");
+    }
+
+    function updateStats() {
+      const text = $("promptOutput").value || "";
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const ratio = getValue("ratio") || "4:5";
+      $("charCount").textContent = text.length.toLocaleString();
+      $("wordCount").textContent = words.toLocaleString();
+      $("ratioStat").textContent = ratio;
+      $("ratioBadge").textContent = "Ratio: " + ratio;
+    }
+
+    async function copyPrompt() {
+      const text = $("promptOutput").value.trim();
+      if (!text) {
+        showToast("ยังไม่มี Prompt ให้ Copy");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied Prompt แล้ว");
+      } catch (err) {
+        $("promptOutput").select();
+        document.execCommand("copy");
+        showToast("Copied Prompt แล้ว");
+      }
+    }
+
+    function clearForm() {
+      fields.forEach((field) => {
+        if (field === "workType") $("workType").value = "ภาพโฆษณาเชิงพาณิชย์";
+        else if (field === "ratio") $("ratio").value = "4:5";
+        else if (field === "style") $("style").value = "Premium Commercial";
+        else if (field === "mood") $("mood").value = "modern, clean, premium, trustworthy";
+        else if (field === "platform") $("platform").value = "เหมาะสำหรับ Facebook, Instagram และสื่อโฆษณาออนไลน์";
+        else $(field).value = "";
+      });
+
+      $("promptOutput").value = "";
+      document.querySelectorAll(".pill").forEach(btn => btn.classList.remove("active"));
+      updateStats();
+      showToast("ล้างข้อมูลแล้ว");
+    }
+
+    function applyTemplate(name) {
+      const template = templates[name];
+      if (!template) return;
+
+      fields.forEach((field) => {
+        if (template[field] !== undefined) $(field).value = template[field];
+      });
+
+      document.querySelectorAll(".pill").forEach(btn => btn.classList.remove("active"));
+      const active = document.querySelector(`[data-template="${name}"]`);
+      if (active) active.classList.add("active");
+
+      generatePrompt();
+      showToast("ใส่ Template แล้ว");
+    }
+
+    let toastTimer;
+    function showToast(message) {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
+    }
+
+    $("generateBtn").addEventListener("click", generatePrompt);
+    $("copyBtn").addEventListener("click", copyPrompt);
+    $("clearBtn").addEventListener("click", clearForm);
+    $("promptOutput").addEventListener("input", updateStats);
+    $("ratio").addEventListener("change", updateStats);
+
+    document.querySelectorAll("[data-template]").forEach((button) => {
+      button.addEventListener("click", () => applyTemplate(button.dataset.template));
+    });
+
+    samplePrev.addEventListener("click", () => {
+      slideSamples(-1);
+      restartSampleAutoSlide();
+    });
+
+    sampleNext.addEventListener("click", () => {
+      slideSamples(1);
+      restartSampleAutoSlide();
+    });
+
+    window.addEventListener("resize", () => {
+      renderSampleDots();
+      updateSampleSlider();
+    });
+
+    renderSampleDots();
+    updateSampleSlider();
+    restartSampleAutoSlide();
+    updateStats();
+  </script>
+</body>
+</html>
