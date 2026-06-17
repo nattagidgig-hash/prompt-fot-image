@@ -4,7 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ad Prompt Generator | เครื่องมือสร้าง Prompt ภาพโฆษณา</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="เครื่องมือสร้าง Prompt ภาพโฆษณาสำหรับ AI Image Generators เช่น ChatGPT, Midjourney, Gemini, Canva AI - สร้าง Prompt คม ชัด พร้อมขาย" />
+  <meta name="keywords" content="AI prompt, image generator, advertising, ChatGPT, Midjourney, Gemini, Canva, graphic design, marketing, ad creator" />
+  <meta name="author" content="Nattagid Manasermwong" />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Ad Prompt Generator | สร้าง Prompt ภาพโฆษณาให้คม ชัด พร้อมขาย" />
+  <meta property="og:description" content="เครื่องมือฟรีสำหรับกราฟิกดีไซเนอร์ นักการตลาด และคนทำคอนเทนต์ สร้าง Prompt สำหรับ AI Image Generators ได้ในคลิกเดียว" />
+  <meta property="og:url" content="https://yourdomain.com/preview.html" />
+  <meta property="og:image" content="./assets/ChatGPT_Image_Apr_23__2026__11_42_40_AM-a6c70026-ad00-411e-9a2e-194a5220e924.png" />
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ad Prompt Generator" />
+  <meta name="twitter:description" content="สร้าง Prompt ภาพโฆษณาให้คม ชัด พร้อมขาย ด้วยเครื่องมือฟรีนี้" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>" />
+  
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  
   <style>
+    /* ============================================
+       CSS VARIABLES & THEME CONFIGURATION
+       ============================================ */
     :root {
       --bg: #f5f7fb;
       --bg-2: #eef2ff;
@@ -26,6 +56,19 @@
       --shadow: 0 24px 70px rgba(31,41,55,0.14);
       --shadow-soft: 0 12px 35px rgba(31,41,55,0.08);
       --focus: 0 0 0 4px rgba(49,88,255,0.13);
+      --focus-visible: 0 0 0 3px rgba(49,88,255,0.5);
+    }
+    
+    /* Dark mode support (future enhancement) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1020;
+        --bg-2: #141a2f;
+        --card: rgba(20,26,47,0.84);
+        --text: #f0f4f8;
+        --muted: #94a3b8;
+        --line: rgba(255,255,255,0.10);
+      }
     }
 
     * {
@@ -237,6 +280,11 @@
       background: rgba(49,88,255,0.06);
     }
 
+    .pill:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
     .pill.active {
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
       color: white;
@@ -354,9 +402,24 @@
       transition: 160ms ease;
     }
 
+    .sample-dot:hover {
+      background: rgba(49,88,255,0.4);
+    }
+
+    .sample-dot:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
     .sample-dot.active {
       width: 24px;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
+    }
+    
+    /* Keyboard navigation for slider */
+    .sample-track:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 4px;
     }
 
     .panel {
@@ -466,6 +529,11 @@
       transform: translateY(-1px);
     }
 
+    .btn:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+
     .btn-primary {
       color: white;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
@@ -482,6 +550,13 @@
       color: white;
       background: linear-gradient(135deg, #0ea5e9, #16a34a);
       box-shadow: 0 16px 34px rgba(14,165,233,0.18);
+    }
+    
+    /* Button loading state */
+    .btn.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
     }
 
     .output-panel {
@@ -719,7 +794,7 @@
         </div>
       </div>
       <div class="sample-viewport">
-        <div class="sample-track" id="sampleTrack">
+        <div class="sample-track" id="sampleTrack" tabindex="0" role="region" aria-label="ตัวอย่างภาพโฆษณา" aria-live="polite">
           <figure class="sample-card"><img src="./assets/ChatGPT_Image_Apr_23__2026__11_42_40_AM-a6c70026-ad00-411e-9a2e-194a5220e924.png" alt="ตัวอย่างภาพโฆษณา AI 1"></figure>
           <figure class="sample-card"><img src="./assets/ChatGPT_Image_Apr_23__2026__11_42_23_AM-4f679d8d-9f64-46c5-82a7-6221a8c89ec5.png" alt="ตัวอย่างภาพโฆษณา AI 2"></figure>
           <figure class="sample-card"><img src="./assets/ChatGPT_Image_Apr_23__2026__11_54_07_AM-8f604238-bef8-4592-afbf-1843cccf62b0.png" alt="ตัวอย่างภาพโฆษณา AI 3"></figure>
@@ -755,15 +830,15 @@
     </section>
 
     <main class="layout">
-      <section class="panel">
+      <section class="panel" aria-labelledby="formTitle">
         <div class="panel-head">
           <div>
-            <h2 class="panel-title">ข้อมูลสำหรับสร้าง Prompt</h2>
+            <h2 class="panel-title" id="formTitle">ข้อมูลสำหรับสร้าง Prompt</h2>
             <p class="panel-sub">กรอกเท่าที่มี ยิ่งละเอียด ยิ่งได้ Prompt ที่คุมภาพได้ดีขึ้น</p>
           </div>
         </div>
 
-        <form class="form" id="promptForm">
+        <form class="form" id="promptForm" aria-label="ฟอร์มสร้าง Prompt">
           <div class="grid-2">
             <div>
               <label for="workType">ประเภทงาน</label>
@@ -885,10 +960,10 @@
         </form>
       </section>
 
-      <section class="panel output-panel">
+      <section class="panel output-panel" aria-labelledby="outputTitle">
         <div class="panel-head">
           <div>
-            <h2 class="panel-title">Prompt Output</h2>
+            <h2 class="panel-title" id="outputTitle">Prompt Output</h2>
             <p class="panel-sub">ตรวจนิดเดียว แล้วกด Copy ไปใช้กับ AI สร้างภาพได้เลย</p>
           </div>
         </div>
@@ -902,7 +977,7 @@
             </div>
             <span class="ratio-badge" id="ratioBadge">Ratio: 4:5</span>
           </div>
-          <textarea id="promptOutput" placeholder="Prompt ที่สร้างจะปรากฏตรงนี้..."></textarea>
+          <textarea id="promptOutput" placeholder="Prompt ที่สร้างจะปรากฏตรงนี้..." aria-label="ผลลัพธ์ Prompt" readonly></textarea>
         </div>
 
         <div class="stats">
@@ -931,7 +1006,22 @@
   <div class="toast" id="toast">Copied!</div>
 
   <script>
-    const $ = (id) => document.getElementById(id);
+    /**
+     * Ad Prompt Generator - Main Application Script
+     * Features: Template system, slider, stats, clipboard API, localStorage
+     */
+    
+    // Safe element getter with error handling
+    const $ = (id) => {
+      const el = document.getElementById(id);
+      if (!el) {
+        console.warn(`[Ad Prompt Generator] Element #${id} not found`);
+      }
+      return el;
+    };
+
+    // LocalStorage key for auto-save
+    const STORAGE_KEY = 'adPromptDraft_v1';
 
     const templates = {
       premium: {
@@ -1101,21 +1191,30 @@
     }
 
     function generatePrompt() {
-      const workType = getValue("workType");
-      const ratio = getValue("ratio");
-      const product = getValue("product");
-      const target = getValue("target");
-      const headline = getValue("headline");
-      const subtext = getValue("subtext");
-      const visualIdea = getValue("visualIdea");
-      const visualHook = getValue("visualHook");
-      const style = getValue("style");
-      const mood = getValue("mood");
-      const colorTone = getValue("colorTone");
-      const platform = getValue("platform");
-      const extra = getValue("extra");
+      const btn = $("generateBtn");
+      
+      // Loading state
+      btn.classList.add("loading");
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "กำลังสร้าง...";
 
-      const prompt = `สร้างภาพโฆษณาระดับมืออาชีพสำหรับ: ${fallback(product, "[ระบุสินค้า / บริการ / กิจกรรม]")}
+      setTimeout(() => {
+        const workType = getValue("workType");
+        const ratio = getValue("ratio");
+        const product = getValue("product");
+        const target = getValue("target");
+        const headline = getValue("headline");
+        const subtext = getValue("subtext");
+        const visualIdea = getValue("visualIdea");
+        const visualHook = getValue("visualHook");
+        const style = getValue("style");
+        const mood = getValue("mood");
+        const colorTone = getValue("colorTone");
+        const platform = getValue("platform");
+        const extra = getValue("extra");
+
+        const prompt = `สร้างภาพโฆษณาระดับมืออาชีพสำหรับ: ${fallback(product, "[ระบุสินค้า / บริการ / กิจกรรม]")}
 
 ประเภทงาน:
 ${fallback(workType, "[ระบุประเภทงาน]")}
@@ -1157,9 +1256,17 @@ ${fallback(extra, "ไม่ใส่โลโก้ปลอม ไม่สร
 คุณภาพภาพ:
 professional advertising image, high-end commercial visual, crisp focus, premium layout, ready for marketing campaign`;
 
-      $("promptOutput").value = prompt;
-      updateStats();
-      showToast("Generate สำเร็จ");
+        $("promptOutput").value = prompt;
+        updateStats();
+        saveToLocalStorage();
+        
+        // Reset button state
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        btn.textContent = originalText;
+        
+        showToast("Generate สำเร็จ");
+      }, 150);
     }
 
     function updateStats() {
@@ -1183,9 +1290,50 @@ professional advertising image, high-end commercial visual, crisp focus, premium
         await navigator.clipboard.writeText(text);
         showToast("Copied Prompt แล้ว");
       } catch (err) {
+        // Fallback: Show user-friendly message instead of deprecated execCommand
+        console.warn("Clipboard API failed, showing manual copy instruction");
+        $("promptOutput").focus();
         $("promptOutput").select();
-        document.execCommand("copy");
-        showToast("Copied Prompt แล้ว");
+        showToast("กรุณาเลือกข้อความและกด Ctrl+C เพื่อ Copy");
+      }
+    }
+
+    /**
+     * Save form data to localStorage for auto-recovery
+     */
+    function saveToLocalStorage() {
+      try {
+        const formData = {};
+        fields.forEach(field => {
+          formData[field] = $(field).value || "";
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+      } catch (err) {
+        console.warn("localStorage not available or quota exceeded");
+      }
+    }
+
+    /**
+     * Load form data from localStorage on page load
+     */
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const formData = JSON.parse(saved);
+          fields.forEach(field => {
+            if (formData[field] !== undefined && $(field)) {
+              $(field).value = formData[field];
+            }
+          });
+          // Regenerate prompt if there's saved data
+          if (formData.product || formData.visualIdea) {
+            generatePrompt();
+            showToast("กู้ข้อมูลอัตโนมัติแล้ว");
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load from localStorage:", err);
       }
     }
 
@@ -1201,6 +1349,13 @@ professional advertising image, high-end commercial visual, crisp focus, premium
 
       $("promptOutput").value = "";
       document.querySelectorAll(".pill").forEach(btn => btn.classList.remove("active"));
+      
+      // Clear localStorage
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {
+        console.warn("Failed to clear localStorage");
+      }
       updateStats();
       showToast("ล้างข้อมูลแล้ว");
     }
@@ -1230,6 +1385,15 @@ professional advertising image, high-end commercial visual, crisp focus, premium
       toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
     }
 
+    // Add auto-save on input change
+    fields.forEach(field => {
+      const el = $(field);
+      if (el) {
+        el.addEventListener("input", saveToLocalStorage);
+        el.addEventListener("change", saveToLocalStorage);
+      }
+    });
+
     $("generateBtn").addEventListener("click", generatePrompt);
     $("copyBtn").addEventListener("click", copyPrompt);
     $("clearBtn").addEventListener("click", clearForm);
@@ -1250,15 +1414,30 @@ professional advertising image, high-end commercial visual, crisp focus, premium
       restartSampleAutoSlide();
     });
 
+    // Keyboard navigation for slider
+    sampleTrack.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") {
+        slideSamples(-1);
+        restartSampleAutoSlide();
+      } else if (e.key === "ArrowRight") {
+        slideSamples(1);
+        restartSampleAutoSlide();
+      }
+    });
+
     window.addEventListener("resize", () => {
       renderSampleDots();
       updateSampleSlider();
     });
 
+    // Initialize
     renderSampleDots();
     updateSampleSlider();
     restartSampleAutoSlide();
     updateStats();
+    
+    // Load saved data from localStorage on page load
+    loadFromLocalStorage();
   </script>
 </body>
 </html>
